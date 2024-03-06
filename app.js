@@ -29,26 +29,26 @@ function generateRandomProducts() {
       state.products[getRandomNumber()]
     ];
   } while (checkForDuplicates(randomProducts, previousProducts));
+  previousProducts = randomProducts;
+
   return randomProducts;
 }
 
 function checkForDuplicates(array1, array2) {
+  if (array1[0] === array1[1] || array1[0] === array1[2] || array1[1] === array1[2]) {
+    return true;
+  }
   for(let i = 0; i < array1.length; i++) {
-    for (let j = 0; j < array2.length; j++) {
-      if (array1[i] === array2[j]) {
-        return true;
-      }
+    if (array2.includes(array1[i])) {
+      return true;
     }
   }
   return false;
 }
 
-
 function renderProduct() {
   let productImages = document.querySelectorAll('.products img');
   let randomProducts = generateRandomProducts();
-
-  previousProducts = randomProducts;
 
   for (let i = 0; i < productImages.length; i++) {
     console.log(productImages);
