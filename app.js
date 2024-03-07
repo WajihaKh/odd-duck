@@ -1,7 +1,7 @@
 let state = {
   products: [],
   roundsRemaining: 25,
-
+  randomProducts: [],
 };
 
 let sectionElem = document.getElementById('results');
@@ -12,6 +12,22 @@ function Product(name, imageFile) {
   this.timeShown = 0;
   this.timesClicked = 0;
   state.products.push(this);
+}
+
+function loadProducts() {
+  let savedProducts = localStorage.getItem('products');
+  if (savedProducts) {
+    let parsedProducts = JSON.parse(savedProducts);
+    console.log('parsedProducts:', parsedProducts);
+    state.products = parsedProducts;
+  } else {
+    renderProduct();
+  }
+
+}
+function savedProducts () {
+  let stringifiedProducts = JSON.stringify(state.products);
+  localStorage.setItem('products', stringifiedProducts);
 }
 
 function getRandomNumber() {
@@ -32,6 +48,7 @@ function generateRandomProducts() {
   previousProducts = randomProducts;
 
   return randomProducts;
+
 }
 
 function checkForDuplicates(array1, array2) {
@@ -45,6 +62,7 @@ function checkForDuplicates(array1, array2) {
   }
   return false;
 }
+
 
 function renderProduct() {
   let productImages = document.querySelectorAll('.products img');
@@ -74,6 +92,8 @@ function displayResults() {
     // console.log(`${product.name} had ${product.timesClicked} votes and was seen ${product.timeShown} times.`);
   }
   sectionElem.appendChild(ulElem);
+  updateChartData();
+
 }
 
 function clickHandler(event) {
@@ -92,6 +112,7 @@ function clickHandler(event) {
     if (clickedProduct) {
       clickedProduct.timesClicked++;
       state.roundsRemaining--;
+
     }
     renderProduct();
     if (state.roundsRemaining === 0) {
@@ -101,8 +122,8 @@ function clickHandler(event) {
       let productImages = document.querySelectorAll('.products img');
       for (let j = 0; j < productImages.length; j++) {
         productImages[j].removeEventListener('click', clickHandler);
+        savedProducts();
       }
-
     }
   }
 }
@@ -129,40 +150,74 @@ new Product('unicorn', './img/unicorn.jpg');
 new Product('watercan', './img/water-can.jpg');
 new Product('wineglass', './img/wine-glass.jpg');
 
-renderProduct();
 
-const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-    datasets: [{
-      label: '# of Votes',
-      data: [12, 19, 3, 5, 2, 3],
-      backgroundColor: [
-        'rgba(255, 99, 132, 0.2)',
-        'rgba(54, 162, 235, 0.2)',
-        'rgba(255, 206, 86, 0.2)',
-        'rgba(75, 192, 192, 0.2)',
-        'rgba(153, 102, 255, 0.2)',
-        'rgba(255, 159, 64, 0.2)'
-      ],
-      borderColor: [
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)'
-      ],
-      borderWidth: 1
-    }]
-  },
-  options: {
-    scales: {
-      y: {
-        beginAtZero: true
+
+
+renderProduct();
+loadProducts();
+
+function updateChartData() {
+  let labels = [];
+  let votesData = [];
+  let shownData = [];
+
+  state.products.forEach(product => {
+    labels.push(product.name);
+    votesData.push(product.timesClicked);
+    shownData.push(product.timeShown);
+  });
+
+  const ctx = document.getElementById('myChart').getContext('2d');
+
+  let options = {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '# of Clicked',
+        data: votesData,
+        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+
+        // 'rgba(255, 99, 132, 0.2)',
+        // 'rgba(54, 162, 235, 0.2)',
+        // 'rgba(75, 192, 192, 0.2)',
+        // 'rgba(153, 102, 255, 0.2)',
+        // 'rgba(255, 159, 64, 0.2)'
+
+        borderColor: 'rgba(255, 99, 132, 1)',
+        //   'rgba(54, 162, 235, 1)',
+        //   'rgba(255, 206, 86, 1)',
+        //   'rgba(75, 192, 192, 1)',
+        //   'rgba(153, 102, 255, 1)',
+        //   'rgba(255, 159, 64, 1)'
+        // ],
+        borderWidth: 1,
+      },
+      {
+
+        label: '# of Times Shown',
+        data: shownData,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
       }
     }
-  }
-});
+  };
+
+  const myChart = new Chart(ctx, options);
+
+  myChart.data.labels = labels;
+  myChart.data.datasets[0].data = votesData;
+  myChart.data.datasets[1].data = shownData;
+
+
+}
+
+
