@@ -176,7 +176,7 @@ function updateChartData() {
       datasets: [{
         label: '# of Clicked',
         data: votesData,
-        backgroundColor: 'rgba(255, 206, 86, 0.2)',
+        backgroundColor: 'rgba(24, 51, 95, 0.8',
 
         // 'rgba(255, 99, 132, 0.2)',
         // 'rgba(54, 162, 235, 0.2)',
@@ -184,7 +184,7 @@ function updateChartData() {
         // 'rgba(153, 102, 255, 0.2)',
         // 'rgba(255, 159, 64, 0.2)'
 
-        borderColor: 'rgba(255, 99, 132, 1)',
+        borderColor: 'rgba(144, 171, 215, 0.6)',
         //   'rgba(54, 162, 235, 1)',
         //   'rgba(255, 206, 86, 1)',
         //   'rgba(75, 192, 192, 1)',
@@ -197,8 +197,8 @@ function updateChartData() {
 
         label: '# of Times Shown',
         data: shownData,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(144, 171, 215, 0.6)',
+        borderColor: 'rgba(24, 51, 95, 0.8',
         borderWidth: 1
       }]
     },
